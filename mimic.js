@@ -96,45 +96,46 @@ detector.addEventListener("onStopSuccess", function() {
 
 // Add a callback to notify when the detector is initialized and ready for running
 detector.addEventListener("onInitializeSuccess", function() {
-  log('#logs', "The detector reports initialized");
-  //Display canvas instead of video feed because we want to draw the feature points on it
-  $("#face_video_canvas").css("display", "block");
-  $("#face_video").css("display", "none");
+        log('#logs', "The detector reports initialized");
+        //Display canvas instead of video feed because we want to draw the feature points on it
+        $("#face_video_canvas").css("display", "block");
+        $("#face_video").css("display", "none");
 
-  // TODO(optional): Call a function to initialize the game, if needed
-  // <your code here>
+        // TODO(optional): Call a function to initialize the game, if needed
+        // <your code here>
+        setInterval(runTheGame(), 5000)
 });
 
 // Add a callback to receive the results from processing an image
 // NOTE: The faces object contains a list of the faces detected in the image,
 //   probabilities for different expressions, emotions and appearance metrics
 detector.addEventListener("onImageResultsSuccess", function(faces, image, timestamp) {
-  var canvas = $('#face_video_canvas')[0];
-  if (!canvas)
-    return;
+        var canvas = $('#face_video_canvas')[0];
+        if (!canvas)
+                return;
 
-  // Report how many faces were found
-  $('#results').html("");
-  log('#results', "Timestamp: " + timestamp.toFixed(2));
-  log('#results', "Number of faces found: " + faces.length);
-  if (faces.length > 0) {
-    // Report desired metrics
-    log('#results', "Appearance: " + JSON.stringify(faces[0].appearance));
-    log('#results', "Emotions: " + JSON.stringify(faces[0].emotions, function(key, val) {
-      return val.toFixed ? Number(val.toFixed(0)) : val;
-    }));
-    log('#results', "Expressions: " + JSON.stringify(faces[0].expressions, function(key, val) {
-      return val.toFixed ? Number(val.toFixed(0)) : val;
-    }));
-    log('#results', "Emoji: " + faces[0].emojis.dominantEmoji);
+        // Report how many faces were found
+        $('#results').html("");
+        log('#results', "Timestamp: " + timestamp.toFixed(2));
+        log('#results', "Number of faces found: " + faces.length);
+        if (faces.length > 0) {
+                // Report desired metrics
+                log('#results', "Appearance: " + JSON.stringify(faces[0].appearance));
+                log('#results', "Emotions: " + JSON.stringify(faces[0].emotions, function(key, val) {
+                        return val.toFixed ? Number(val.toFixed(0)) : val;
+                }));
+                log('#results', "Expressions: " + JSON.stringify(faces[0].expressions, function(key, val) {
+                        return val.toFixed ? Number(val.toFixed(0)) : val;
+                }));
+                log('#results', "Emoji: " + faces[0].emojis.dominantEmoji);
 
-    // Call functions to draw feature points and dominant emoji (for the first face only)
-    drawFeaturePoints(canvas, image, faces[0]);
-    drawEmoji(canvas, image, faces[0]);
+                // Call functions to draw feature points and dominant emoji (for the first face only)
+                drawFeaturePoints(canvas, image, faces[0]);
+                drawEmoji(canvas, image, faces[0]);
 
-    // TODO: Call your function to run the game (define it first!)
-    // <your code here>
-  }
+                // TODO: Call your function to run the game (define it first!)
+                // <your code here>
+        }
 });
 
 
@@ -148,14 +149,19 @@ function drawFeaturePoints(canvas, img, face) {
   // TODO: Set the stroke and/or fill style you want for each feature point marker
   // See: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D#Fill_and_stroke_styles
   // <your code here>
-  
+        var radius = 2;
+        ctx.strokeStyle = '#fff';
   // Loop over each feature point in the face
   for (var id in face.featurePoints) {
     var featurePoint = face.featurePoints[id];
 
-    // TODO: Draw feature point, e.g. as a circle using ctx.arc()
-    // See: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/arc
-    // <your code here>
+          // TODO: Draw feature point, e.g. as a circle using ctx.arc()
+          // See: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/arc
+          // <your code here>
+          ctx.beginPath(); 
+          ctx.arc(featurePoint.x,featurePoint.y, radius, 0, 2 * Math.PI );
+          // ctx.fillText("" + id, featurePoint.x, featurePoint.y)
+          ctx.stroke();
   }
 }
 
@@ -166,11 +172,16 @@ function drawEmoji(canvas, img, face) {
 
   // TODO: Set the font and style you want for the emoji
   // <your code here>
-  
+        ctx.font = '4em tahoma'
+        var distX = Math.abs(face.featurePoints[9].x - face.featurePoints[10].x)
+        var distY = Math.abs(face.featurePoints[9].y - face.featurePoints[10].y) 
+        // console.log("("+face.featurePoints[10].x+distX + ", " + face.featurePoints[10].y+distY + ")")
   // TODO: Draw it using ctx.strokeText() or fillText()
   // See: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillText
   // TIP: Pick a particular feature point as an anchor so that the emoji sticks to your face
   // <your code here>
+        
+        ctx.fillText(face.emojis.dominantEmoji, face.featurePoints[10].x+distX, face.featurePoints[10].y + distY)
 }
 
 // TODO: Define any variables and functions to implement the Mimic Me! game mechanics
@@ -187,3 +198,10 @@ function drawEmoji(canvas, img, face) {
 // - Define a game reset function (same as init?), and call it from the onReset() function above
 
 // <your code here>
+function runTheGame() {
+        // 1. choose random emoji
+        max_idx = emojis.length;
+        idx = Math.floor((Math.random() * max_idx))
+        // 2. update emoji with new value for certain time
+        setTargetEmoji(emojis[idx])
+}
