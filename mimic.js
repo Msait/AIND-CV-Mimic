@@ -75,6 +75,7 @@ function onReset() {
 
   // TODO(optional): You can restart the game as well
   // <your code here>
+        initTheGame();
 };
 
 // Add a callback to notify when camera access is allowed
@@ -103,7 +104,7 @@ detector.addEventListener("onInitializeSuccess", function() {
 
         // TODO(optional): Call a function to initialize the game, if needed
         // <your code here>
-        setInterval(runTheGame(), 5000)
+        initTheGame()
 });
 
 // Add a callback to receive the results from processing an image
@@ -135,6 +136,7 @@ detector.addEventListener("onImageResultsSuccess", function(faces, image, timest
 
                 // TODO: Call your function to run the game (define it first!)
                 // <your code here>
+                runTheGame(faces, image)
         }
 });
 
@@ -198,10 +200,35 @@ function drawEmoji(canvas, img, face) {
 // - Define a game reset function (same as init?), and call it from the onReset() function above
 
 // <your code here>
-function runTheGame() {
+function initTheGame() {
+        getNextEmojiToMimic()
+        score = 0
+        totalFacesToMimic = 5
+        setScore(score, totalFacesToMimic)
+}
+
+function getNextEmojiToMimic() {
         // 1. choose random emoji
         max_idx = emojis.length;
         idx = Math.floor((Math.random() * max_idx))
         // 2. update emoji with new value for certain time
         setTargetEmoji(emojis[idx])
+        console.log("Set emoji to mimic: " + emojis[idx])
+}
+
+function runTheGame(faces, image) {
+   // 1. check if player correct mimic the emoji`
+        var face = faces[0];
+        // console.log("Need to mimic emoji: " + emojis[idx]);
+        // console.log("Your current emoji: " + toUnicode(face.emojis.dominantEmoji));
+        if (toUnicode(face.emojis.dominantEmoji) === emojis[idx]) {
+                console.log("You successfuly mimic. Your score now: " + ++score);
+                setScore(score, totalFacesToMimic);
+                if (score === totalFacesToMimic) {
+                        log('#logs', "Congrats! You won the game. To play once more hit reset button.");
+                        idx = 0;                        
+                }
+
+                getNextEmojiToMimic();
+        }
 }
