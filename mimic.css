@@ -30,3 +30,7 @@ div.top {
 #logs {
   font-size: 10pt;
 }
+
+span.currentHighlight {
+  border-top: 10px solid skyblue;
+}

@@ -24,6 +24,11 @@
           <button id="start" onclick="onStart()">Start</button>
           <button id="stop" onclick="onStop()">Stop</button>
           <button id="reset" onclick="onReset()">Reset</button>
+          <button id="nextEmoji" onclick="onNext()">Next Emoji</button>
+          <select id="gameType">
+            <option value="type1">Time challenge</option>
+            <option value="type2">Sequence of emoji</option>
+          </select>
         </div>
         <div id="instructions">
           <h5>INSTRUCTIONS</h5>
@@ -34,6 +39,7 @@
               <li>Mimic each emoji being displayed to score a point!</li>
               <li>Press <strong>Stop</strong> to end the detector.</li>
               <li>Watch the tracking results and log messages for more information.</li>
+              <li>If you stuck on emoji - press "Next emoji". It will change emoji to mimic without reset time to mimic this emoji</li>
             </ul>
           </p>
         </div>
