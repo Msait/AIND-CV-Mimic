@@ -10,11 +10,13 @@ div.top {
 
 #camera { width: 640px; height: 480px; padding: 0; }
 
-#game { height: 120px; }
+#game {/* height: 120px; */}
 
 #target {
-  height: 80px;
-  font-family: Arial, sans-serif; font-size: 48pt;
+  display: block;
+  /* height: 80px; */
+  font-family: Arial, sans-serif;
+  font-size: 48pt;
 }
 
 #score {

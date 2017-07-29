@@ -24,9 +24,9 @@ var emojis = [ 128528, 9786, 128515, 128524, 128527, 128521, 128535, 128539, 128
 var questionMarkUnicode = 63;
 var idx = 0; // Current emoji index user should guess
 var startTime = 0; // time to track game start
-var playTime = 25; // total play time for single round (in seconds)
+var playTime = 20; // total play time for single round (in seconds)
 var thresholdInSeconds = 1; // period to fix mimic emoji 
-var gameType = "type2"; // use global var for tracking game type and set default value for game type
+var gameType = "type1"; // use global var for tracking game type and set default value for game type
 var sequenceLengthToMimic = 10; // max emojis in sequence to mimic
 var emojiSeq = []; // sequence of emoji to mimic if gameType == type2 
 var timeToMimicEmojiInSeqSeconds = 5;
@@ -84,7 +84,7 @@ function onStart() {
   gameTypeHandler(
     function(){ totalFacesToMimic = 5; }, 
     function(){
-      $("#logs").html("Time to mimic each emoji " + timeToMimicEmojiInSeqSeconds + ". And will summarize if you mimic faster.");  
+      $("#logs").html("Time to mimic each emoji " + timeToMimicEmojiInSeqSeconds + " seconds. And will summarize if you mimic faster.");  
       totalFacesToMimic = sequenceLengthToMimic;
     });
   setScore(score, totalFacesToMimic);
@@ -116,7 +116,17 @@ function onReset() {
   $('span[id^=emo]').css("border", "");
   setTargetEmoji(questionMarkUnicode);
   score = 0;
-   console.log("Reset");
+  gameTypeHandler(
+    function(){
+      totalFacesToMimic = 5;
+      $("#nextEmoji").show();
+    },
+    function(){
+      totalFacesToMimic = sequenceLengthToMimic;
+      $("#nextEmoji").hide();
+    }
+  );
+  setScore(score, totalFacesToMimic);
 };
 
 // Add a callback to notify when camera access is allowed
@@ -250,14 +260,15 @@ function initTheGame() {
 
 // update html placeholder with random emoji
 function setNextEmojiToMimic() {
-  if (gameType === 'type1') {
-    idx = getNextEmojiToMimic();
+  gameTypeHandler(
+    function(){
+      idx = getNextEmojiToMimic();
     // update emoji with new value for certain time
     setTargetEmoji(emojis[idx]);
-    console.log("Set emoji to mimic: " + emojis[idx]);  
-  } else if (gameType === 'type2') {
-    setNextEmojiSequenceToMimic(); 
-  }       
+    console.log("Set emoji to mimic: " + emojis[idx]);
+    }, 
+    function(){ setNextEmojiSequenceToMimic(); }, 
+  );     
 }
 
 // get random emoji array index 
@@ -270,6 +281,7 @@ function getNextEmojiToMimic() {
 
 // update html placeholder with random emoji sequence
 function setNextEmojiSequenceToMimic() {
+  emojiSeq = [];
   for (i = 0; i < sequenceLengthToMimic; i++){
     emojiSeq.push( emojis[ getNextEmojiToMimic() ] );  
   }
@@ -394,18 +406,7 @@ function onSelectChange(value) {
   console.log("Game type was changed to " + value);
   log('#logs', "Game type was changed to \"" + getGameType().text() + "\"");
   gameType = value;
-
-  gameTypeHandler(
-    function(){
-      totalFacesToMimic = 5;
-      $("#nextEmoji").show();
-    },
-    function(){
-      totalFacesToMimic = sequenceLengthToMimic;
-      $("#nextEmoji").hide();
-    }
-  );
-  setScore(score, totalFacesToMimic);
+  onReset();
 };
 
 // Update target emoji sequence being displayed by supplying a unicode value
